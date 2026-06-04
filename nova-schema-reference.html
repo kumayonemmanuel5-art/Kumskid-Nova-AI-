@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nova AI — Database Schema</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --gold:#D4AF37;--bg:#080808;--bg2:#111;--bg3:#181818;
+      --text:#f0f0f0;--muted:rgba(255,255,255,0.45);
+      --border:rgba(255,255,255,0.08);
+    }
+    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;padding:40px 24px 80px;}
+    body::before{
+      content:'';position:fixed;inset:0;pointer-events:none;
+      background:radial-gradient(ellipse 70% 40% at 50% 0%,rgba(212,175,55,0.1),transparent);
+    }
+    h1{font-family:'Syne',sans-serif;font-size:clamp(28px,4vw,48px);font-weight:800;
+       letter-spacing:-1.5px;margin-bottom:8px;}
+    h1 span{color:var(--gold);}
+    .subtitle{color:var(--muted);font-size:15px;margin-bottom:48px;font-weight:300;}
+
+    .tables-grid{
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
+      gap:24px;max-width:1200px;margin:0 auto;
+    }
+    .table-card{
+      background:var(--bg2);border:1px solid var(--border);
+      border-radius:16px;overflow:hidden;
+    }
+    .table-header{
+      padding:16px 20px;
+      background:linear-gradient(135deg,rgba(212,175,55,0.12),rgba(212,175,55,0.04));
+      border-bottom:1px solid var(--border);
+      display:flex;align-items:center;gap:10px;
+    }
+    .table-num{
+      width:26px;height:26px;border-radius:8px;
+      background:var(--gold);color:#000;
+      font-family:'Syne',sans-serif;font-weight:800;font-size:13px;
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    }
+    .table-name{font-family:'DM Mono',monospace;font-size:16px;font-weight:500;color:var(--gold);}
+    .table-desc{font-size:12px;color:var(--muted);margin-left:auto;text-align:right;}
+
+    table{width:100%;border-collapse:collapse;}
+    thead th{
+      padding:10px 16px;font-size:11px;font-weight:600;
+      text-transform:uppercase;letter-spacing:1px;color:var(--muted);
+      text-align:left;border-bottom:1px solid var(--border);
+    }
+    tbody tr{border-bottom:1px solid rgba(255,255,255,0.04);}
+    tbody tr:last-child{border-bottom:none;}
+    tbody tr:hover{background:rgba(255,255,255,0.02);}
+    td{padding:10px 16px;font-size:13px;vertical-align:top;}
+    .col-name{font-family:'DM Mono',monospace;font-size:12px;
+              background:rgba(212,175,55,0.1);color:var(--gold);
+              padding:2px 7px;border-radius:5px;white-space:nowrap;}
+    .col-type{color:#79c0ff;font-family:'DM Mono',monospace;font-size:12px;}
+    .col-constraint{color:var(--muted);font-size:12px;line-height:1.5;}
+    .pk{color:#ffa657;font-weight:600;}
+    .fk{color:#a5d6ff;}
+    .nn{color:#7ee787;}
+    .def{color:var(--muted);}
+
+    /* Relationships diagram */
+    .rel-section{max-width:1200px;margin:48px auto 0;
+                 background:var(--bg2);border:1px solid var(--border);
+                 border-radius:16px;padding:24px;}
+    .rel-section h2{font-family:'Syne',sans-serif;font-size:20px;
+                    font-weight:700;margin-bottom:20px;color:var(--gold);}
+    .rel-diagram{display:flex;flex-wrap:wrap;gap:12px;align-items:center;
+                 font-family:'DM Mono',monospace;font-size:13px;}
+    .rel-box{background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);
+             border-radius:8px;padding:8px 14px;color:var(--gold);}
+    .rel-arrow{color:var(--muted);font-size:18px;}
+
+    /* RLS section */
+    .rls-section{max-width:1200px;margin:24px auto 0;
+                 background:var(--bg2);border:1px solid var(--border);
+                 border-radius:16px;padding:24px;}
+    .rls-section h2{font-family:'Syne',sans-serif;font-size:20px;
+                    font-weight:700;margin-bottom:16px;color:#22c55e;}
+    .rls-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;}
+    .rls-item{background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.2);
+              border-radius:10px;padding:12px 14px;}
+    .rls-table{font-family:'DM Mono',monospace;font-size:13px;color:#22c55e;margin-bottom:4px;}
+    .rls-rule{font-size:12px;color:var(--muted);line-height:1.5;}
+
+    /* Plans table */
+    .plans-section{max-width:1200px;margin:24px auto 0;
+                   background:var(--bg2);border:1px solid var(--border);
+                   border-radius:16px;padding:24px;}
+    .plans-section h2{font-family:'Syne',sans-serif;font-size:20px;
+                      font-weight:700;margin-bottom:16px;color:var(--gold);}
+    .plans-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+    .plan-card{border-radius:12px;padding:16px;border:1px solid;}
+    .plan-card.starter{background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.1);}
+    .plan-card.growth{background:rgba(212,175,55,0.06);border-color:rgba(212,175,55,0.25);}
+    .plan-card.pro{background:rgba(168,85,247,0.06);border-color:rgba(168,85,247,0.25);}
+    .plan-name{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;margin-bottom:8px;}
+    .plan-price{font-size:22px;font-weight:700;margin-bottom:12px;}
+    .plan-price small{font-size:13px;font-weight:400;color:var(--muted);}
+    .plan-feat{font-size:12px;color:var(--muted);margin-bottom:4px;}
+    .plan-feat::before{content:'✓ ';color:#22c55e;}
+
+    @media(max-width:600px){.plans-grid{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+
+  <div style="max-width:1200px;margin:0 auto 40px;">
+    <h1>KUMSKID <span>Nova AI</span> Database</h1>
+    <p class="subtitle">Production Schema · Supabase PostgreSQL · 6 Core Tables · RLS Enabled</p>
+  </div>
+
+  <div class="tables-grid">
+
+    <!-- 1. users -->
+    <div class="table-card">
+      <div class="table-header">
+        <div class="table-num">1</div>
+        <div>
+          <div class="table-name">users</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">SaaS Subscribers</div>
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>Column</th><th>Type</th><th>Constraint</th></tr></thead>
+        <tbody>
+          <tr><td><span class="col-name">id</span></td><td><span class="col-type">UUID</span></td><td><span class="pk">PRIMARY KEY</span></td></tr>
+          <tr><td><span class="col-name">email</span></td><td><span class="col-type">VARCHAR(255)</span></td><td><span class="nn">UNIQUE, NOT NULL</span></td></tr>
+          <tr><td><span class="col-name">password_hash</span></td><td><span class="col-type">VARCHAR(255)</span></td><td><span class="nn">NOT NULL</span></td></tr>
+          <tr><td><span class="col-name">full_name</span></td><td><span class="col-type">VARCHAR(255)</span></td><td><span class="def">NULLABLE</span></td></tr>
+          <tr><td><span class="col-name">business_name</span></td><td><span class="col-type">VARCHAR(255)</span></td><td><span class="def">NULLABLE</span></td></tr>
+          <tr><td><span class="col-name">is_verified</span></td><td><span class="col-type">BOOLEAN</span></td><td><span class="def">DEFAULT FALSE</span></td></tr>
+          <tr><td><span class="col-name">created_at</span></td><td><span class="col-type">TIMESTAMP</span></td><td><span class="def">DEFAULT NOW()</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 2. subscriptions -->
+    <div class="table-card">
+      <div class="table-header">
+        <div class="table-num">2</div>
+        <div>
+          <div class="table-name">subscriptions</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">Billing & Plan Status</div>
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>Column</th><th>Type</th><th>Constraint</th></tr></thead>
+        <tbody>
+          <tr><td><span class="col-name">id</span></td><td><span class="col-type">UUID</span></td><td><span class="pk">PRIMARY KEY</span></td></tr>
+          <tr><td><span class="col-name">user_id</span></td><td><span class="col-type">UUID</span></td><td><span class="fk">FK → users.id</span></td></tr>
+          <tr><td><span class="col-name">plan_tier</span></td><td><span class="col-type">VARCHAR(50)</span></td><td><span class="nn">starter|growth|pro</span></td></tr>
+          <tr><td><span class="col-name">status</span></td><td><span class="col-type">VARCHAR(50)</span></td><td><span class="nn">active|past_due|cancelled</span></td></tr>
+          <tr><td><span class="col-name">payment_gateway</span></td><td><span class="col-type">VARCHAR(50)</span></td><td><span class="def">flutterwave|stripe…</span></td></tr>
+          <tr><td><span class="col-name">current_period_end</span></td><td><span class="col-type">TIMESTAMP</span></td><td><span class="nn">NOT NULL</span></td></tr>
+          <tr><td><span class="col-name">gateway_sub_id</span></td><td><span class="col-type">VARCHAR(255)</span></td><td><span class="def">from payment provider</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 3. chatbots -->
+    <div class="table-card">
+      <div class="table-header">
+        <div class="table-num">3</div>
+        <div>
+          <div class="table-name">chatbots</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">Custom AI Agents</div>
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>Column</th><th>Type</th><th>Constraint</th></tr></thead>
+        <tbody>
+          <tr><td><span class="col-name">id</span></td><td><span class="col-type">UUID</span></td><td><span class="pk">PRIMARY KEY</span></td></tr>
+          <tr><td><span class="col-name">user_id</span></td><td><span class="col-type">UUID</span></td><td><span class="fk">FK → users.id</span></td></tr>
+          <tr><td><span class="col-name">bot_name</span></td><td><span class="col-type">VARCHAR(100)</span></td><td><span class="nn">NOT NULL</span></td></tr>
+          <tr><td><span class="col-name">system_prompt</span></td><td><span class="col-type">TEXT</span></td><td><span class="nn">NOT NULL</span></td></tr>
+          <tr><td><span class="col-name">primary_color</span></td><td><span class="col-type">VARCHAR(7)</span></td><td><span class="def">DEFAULT '#D4AF37'</span></td></tr>
+          <tr><td><span class="col-name">theme</span></td><td><span class="col-type">VARCHAR(10)</span></td><td><span class="def">dark | light</span></td></tr>
+          <tr><td><span class="col-name">is_active</span></td><td><span class="col-type">BOOLEAN</span></td><td><span class="def">DEFAULT TRUE</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 4. knowledge_bases -->
+    <div class="table-card">
+      <div class="table-header">
+        <div class="table-num">4</div>
+        <div>
+          <div class="table-name">knowledge_bases</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">AI Training Data</div>
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>Column</th><th>Type</th><th>Constraint</th></tr></thead>
+        <tbody>
+          <tr><td><span class="col-name">id</span></td><td><span class="col-type">UUID</span></td><td><span class="pk">PRIMARY KEY</span></td></tr>
+          <tr><td><span class="col-name">chatbot_id</span></td><td><span class="col-type">UUID</span></td><td><span class="fk">FK → chatbots.id</span></td></tr>
+          <tr><td><span class="col-name">source_type</span></td><td><span class="col-type">VARCHAR(50)</span></td><td><span class="nn">text|url|file|faq</span></td></tr>
+          <tr><td><span class="col-name">source_value</span></td><td><span class="col-type">TEXT</span></td><td><span class="nn">NOT NULL</span></td></tr>
+          <tr><td><span class="col-name">content_raw</span></td><td><span class="col-type">TEXT</span></td><td><span class="nn">extracted text</span></td></tr>
+          <tr><td><span class="col-name">is_processed</span></td><td><span class="col-type">BOOLEAN</span></td><td><span class="def">DEFAULT FALSE</span></td></tr>
+          <tr><td><span class="col-name">created_at</span></td><td><span class="col-type">TIMESTAMP</span></td><td><span class="def">DEFAULT NOW()</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 5. conversations -->
+    <div class="table-card">
+      <div class="table-header">
+        <div class="table-num">5</div>
+        <div>
+          <div class="table-name">conversations</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">End-User Sessions</div>
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>Column</th><th>Type</th><th>Constraint</th></tr></thead>
+        <tbody>
+          <tr><td><span class="col-name">id</span></td><td><span class="col-type">UUID</span></td><td><span class="pk">PRIMARY KEY</span></td></tr>
+          <tr><td><span class="col-name">chatbot_id</span></td><td><span class="col-type">UUID</span></td><td><span class="fk">FK → chatbots.id</span></td></tr>
+          <tr><td><span class="col-name">session_token</span></td><td><span class="col-type">VARCHAR(255)</span></td><td><span class="nn">UNIQUE, NOT NULL</span></td></tr>
+          <tr><td><span class="col-name">visitor_email</span></td><td><span class="col-type">VARCHAR(255)</span></td><td><span class="def">NULLABLE (lead capture)</span></td></tr>
+          <tr><td><span class="col-name">message_count</span></td><td><span class="col-type">INTEGER</span></td><td><span class="def">auto-incremented</span></td></tr>
+          <tr><td><span class="col-name">page_url</span></td><td><span class="col-type">TEXT</span></td><td><span class="def">where chat started</span></td></tr>
+          <tr><td><span class="col-name">last_message_at</span></td><td><span class="col-type">TIMESTAMP</span></td><td><span class="def">auto-updated</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 6. messages -->
+    <div class="table-card">
+      <div class="table-header">
+        <div class="table-num">6</div>
+        <div>
+          <div class="table-name">messages</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">Individual Chat Logs</div>
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>Column</th><th>Type</th><th>Constraint</th></tr></thead>
+        <tbody>
+          <tr><td><span class="col-name">id</span></td><td><span class="col-type">UUID</span></td><td><span class="pk">PRIMARY KEY</span></td></tr>
+          <tr><td><span class="col-name">conversation_id</span></td><td><span class="col-type">UUID</span></td><td><span class="fk">FK → conversations.id</span></td></tr>
+          <tr><td><span class="col-name">sender_type</span></td><td><span class="col-type">VARCHAR(10)</span></td><td><span class="nn">user | bot</span></td></tr>
+          <tr><td><span class="col-name">message_text</span></td><td><span class="col-type">TEXT</span></td><td><span class="nn">NOT NULL</span></td></tr>
+          <tr><td><span class="col-name">tokens_used</span></td><td><span class="col-type">INTEGER</span></td><td><span class="def">API cost tracking</span></td></tr>
+          <tr><td><span class="col-name">response_time_ms</span></td><td><span class="col-type">INTEGER</span></td><td><span class="def">bot latency</span></td></tr>
+          <tr><td><span class="col-name">created_at</span></td><td><span class="col-type">TIMESTAMP</span></td><td><span class="def">DEFAULT NOW()</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- Relationships -->
+  <div class="rel-section">
+    <h2>🔗 Table Relationships</h2>
+    <div class="rel-diagram">
+      <div class="rel-box">users</div>
+      <div class="rel-arrow">1 → ∞</div>
+      <div class="rel-box">subscriptions</div>
+      <div class="rel-arrow">·</div>
+      <div class="rel-box">users</div>
+      <div class="rel-arrow">1 → ∞</div>
+      <div class="rel-box">chatbots</div>
+      <div class="rel-arrow">1 → ∞</div>
+      <div class="rel-box">knowledge_bases</div>
+      <br style="width:100%;flex-basis:100%">
+      <div class="rel-box">chatbots</div>
+      <div class="rel-arrow">1 → ∞</div>
+      <div class="rel-box">conversations</div>
+      <div class="rel-arrow">1 → ∞</div>
+      <div class="rel-box">messages</div>
+    </div>
+  </div>
+
+  <!-- RLS -->
+  <div class="rls-section">
+    <h2>🔒 Row Level Security</h2>
+    <div class="rls-grid">
+      <div class="rls-item"><div class="rls-table">users</div><div class="rls-rule">Only own row readable/editable</div></div>
+      <div class="rls-item"><div class="rls-table">subscriptions</div><div class="rls-rule">Only own subscription visible</div></div>
+      <div class="rls-item"><div class="rls-table">chatbots</div><div class="rls-rule">Only bots you created</div></div>
+      <div class="rls-item"><div class="rls-table">knowledge_bases</div><div class="rls-rule">Via chatbot ownership chain</div></div>
+      <div class="rls-item"><div class="rls-table">conversations</div><div class="rls-rule">Public INSERT, owner SELECT</div></div>
+      <div class="rls-item"><div class="rls-table">messages</div><div class="rls-rule">Public INSERT, owner SELECT</div></div>
+    </div>
+  </div>
+
+  <!-- Plans -->
+  <div class="plans-section">
+    <h2>💳 Subscription Plans (Seeded)</h2>
+    <div class="plans-grid">
+      <div class="plan-card starter">
+        <div class="plan-name">Starter</div>
+        <div class="plan-price">₦15,000 <small>/ mo</small></div>
+        <div class="plan-feat">1 Custom Bot</div>
+        <div class="plan-feat">500 messages/month</div>
+        <div class="plan-feat">Standard branding</div>
+        <div class="plan-feat">Basic analytics</div>
+      </div>
+      <div class="plan-card growth">
+        <div class="plan-name" style="color:var(--gold)">Growth</div>
+        <div class="plan-price" style="color:var(--gold)">₦40,000 <small>/ mo</small></div>
+        <div class="plan-feat">2 Custom Bots</div>
+        <div class="plan-feat">3,000 messages/month</div>
+        <div class="plan-feat">Custom colors & themes</div>
+        <div class="plan-feat">Lead CSV export</div>
+      </div>
+      <div class="plan-card pro">
+        <div class="plan-name" style="color:#a855f7">Pro / Elite</div>
+        <div class="plan-price" style="color:#a855f7">₦100,000 <small>/ mo</small></div>
+        <div class="plan-feat">Unlimited Bots</div>
+        <div class="plan-feat">15,000 messages/month</div>
+        <div class="plan-feat">Remove "Powered by" branding</div>
+        <div class="plan-feat">Priority support</div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
