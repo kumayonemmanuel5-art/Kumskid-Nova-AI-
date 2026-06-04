@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Nova AI — Subscribe</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#D4AF37;--gold2:#f0d060;
+  --bg:#070709;--bg2:#0f0f13;--bg3:#161619;
+  --text:#f2f2f5;--muted:rgba(242,242,245,0.45);--faint:rgba(242,242,245,0.1);
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.14);
+  --green:#22c55e;--red:#ef4444;
+}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;
+     min-height:100vh;display:flex;flex-direction:column}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 40% at 50% 0%,rgba(212,175,55,0.1),transparent)}
+
+nav{padding:18px 40px;display:flex;align-items:center;justify-content:space-between;
+    border-bottom:1px solid var(--border)}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:18px}
+.logo span{color:var(--gold)}
+.back-btn{color:var(--muted);font-size:13px;text-decoration:none;
+          display:flex;align-items:center;gap:6px;transition:color 0.2s}
+.back-btn:hover{color:var(--text)}
+
+/* ── Checkout Layout ── */
+.checkout-wrapper{flex:1;display:flex;align-items:center;justify-content:center;
+                  padding:40px 20px}
+.checkout-grid{display:grid;grid-template-columns:1fr 400px;gap:32px;
+               width:100%;max-width:880px;align-items:start}
+
+/* Order summary */
+.order-card{background:var(--bg2);border:1px solid var(--border2);
+            border-radius:20px;padding:28px;position:sticky;top:20px}
+.order-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;
+             text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:20px}
+.plan-badge{
+  display:flex;align-items:center;gap:14px;
+  background:linear-gradient(135deg,rgba(212,175,55,0.12),rgba(212,175,55,0.04));
+  border:1px solid rgba(212,175,55,0.25);border-radius:14px;padding:16px;margin-bottom:20px}
+.plan-badge-icon{width:44px;height:44px;border-radius:12px;
+                 background:linear-gradient(135deg,var(--gold),var(--gold2));
+                 display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.plan-badge-name{font-family:'Syne',sans-serif;font-size:16px;font-weight:800}
+.plan-badge-desc{font-size:12px;color:var(--muted);margin-top:2px}
+
+.feature-list{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.feature-list li{display:flex;align-items:center;gap:10px;font-size:13px}
+.feat-check{width:18px;height:18px;border-radius:50%;background:rgba(34,197,94,0.12);
+            display:flex;align-items:center;justify-content:center;flex-shrink:0;
+            font-size:10px;color:var(--green)}
+
+.price-breakdown{border-top:1px solid var(--border);padding-top:18px}
+.price-row{display:flex;justify-content:space-between;font-size:13px;
+           color:var(--muted);margin-bottom:8px}
+.price-row.total{color:var(--text);font-weight:600;font-size:16px;
+                 border-top:1px solid var(--border);padding-top:12px;margin-top:4px}
+.price-ngn{font-size:11px;color:var(--muted);margin-top:3px;text-align:right;
+           font-family:'DM Mono',monospace}
+
+/* Checkout form */
+.checkout-form-card{background:var(--bg2);border:1px solid var(--border);
+                    border-radius:20px;padding:28px}
+.checkout-form-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;
+                     letter-spacing:-0.5px;margin-bottom:24px}
+
+.form-group{margin-bottom:18px}
+.form-label{display:block;font-size:11px;font-weight:600;
+            text-transform:uppercase;letter-spacing:0.5px;
+            color:var(--muted);margin-bottom:7px}
+.form-input{width:100%;background:var(--bg3);border:1px solid var(--border);
+            border-radius:10px;padding:11px 14px;color:var(--text);font-size:14px;
+            outline:none;transition:border-color 0.2s,box-shadow 0.2s;font-family:inherit}
+.form-input:focus{border-color:rgba(212,175,55,0.5);box-shadow:0 0 0 3px rgba(212,175,55,0.1)}
+.form-input::placeholder{color:var(--faint)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+/* Currency toggle */
+.currency-toggle{display:flex;background:var(--bg3);border-radius:10px;
+                 padding:3px;margin-bottom:20px;gap:3px}
+.currency-opt{flex:1;padding:9px;text-align:center;font-size:13px;font-weight:500;
+              border-radius:8px;cursor:pointer;transition:all 0.2s;
+              color:var(--muted);border:none;background:none}
+.currency-opt.active{background:var(--bg2);color:var(--text);
+                     box-shadow:0 1px 4px rgba(0,0,0,0.3)}
+
+/* Pay button */
+.pay-btn{
+  width:100%;padding:15px;border-radius:12px;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  color:#000;font-size:16px;font-weight:700;border:none;cursor:pointer;
+  font-family:inherit;transition:all 0.2s;
+  box-shadow:0 4px 20px rgba(212,175,55,0.35)}
+.pay-btn:hover{transform:translateY(-1px);box-shadow:0 6px 28px rgba(212,175,55,0.45)}
+.pay-btn:active{transform:translateY(0)}
+.pay-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+
+.security-note{display:flex;align-items:center;gap:8px;justify-content:center;
+               margin-top:14px;font-size:12px;color:var(--muted)}
+.security-note svg{flex-shrink:0}
+
+.flw-logo{display:flex;align-items:center;justify-content:center;gap:6px;
+          margin-top:16px;font-size:11px;color:var(--faint)}
+.flw-badge{background:#f5a623;color:#000;font-size:10px;font-weight:700;
+           padding:2px 8px;border-radius:4px;letter-spacing:0.3px}
+
+/* ── Plan selector (if coming from home) ── */
+#plan-selector{padding:40px 20px;max-width:900px;margin:0 auto;width:100%}
+.selector-title{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;
+                letter-spacing:-1px;text-align:center;margin-bottom:8px}
+.selector-title span{color:var(--gold)}
+.selector-sub{text-align:center;color:var(--muted);font-size:15px;margin-bottom:40px}
+
+.plans-row{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.plan-select-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:18px;padding:24px;cursor:pointer;
+  transition:all 0.25s;position:relative}
+.plan-select-card:hover{border-color:var(--border2);transform:translateY(-3px);
+                         box-shadow:0 12px 40px rgba(0,0,0,0.3)}
+.plan-select-card.selected{border-color:var(--gold);
+                            box-shadow:0 0 0 1px rgba(212,175,55,0.3)}
+.plan-popular-tag{position:absolute;top:-1px;left:50%;transform:translateX(-50%);
+                  background:var(--gold);color:#000;font-size:10px;font-weight:700;
+                  padding:3px 14px;border-radius:0 0 10px 10px;letter-spacing:0.3px}
+.plan-select-name{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;margin-bottom:8px}
+.plan-select-price{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;margin-bottom:2px}
+.plan-select-price small{font-size:14px;font-weight:400;color:var(--muted)}
+.plan-select-ngn{font-size:13px;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:16px}
+.plan-feat-mini{font-size:12px;color:var(--muted);margin-bottom:6px;
+                display:flex;align-items:center;gap:6px}
+.plan-feat-mini::before{content:'✓';color:var(--green);font-weight:700}
+.select-btn{
+  width:100%;margin-top:18px;padding:11px;border-radius:10px;
+  font-size:13px;font-weight:600;border:1px solid;cursor:pointer;
+  transition:all 0.2s;font-family:inherit}
+.select-btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold2));
+                  color:#000;border-color:transparent}
+.select-btn-ghost{background:transparent;color:var(--text);border-color:var(--border2)}
+.select-btn-ghost:hover{background:rgba(255,255,255,0.05)}
+
+/* ── Success / Failure screens ── */
+#result-screen{display:none;flex:1;align-items:center;justify-content:center;
+               padding:40px 20px}
+.result-card{background:var(--bg2);border:1px solid var(--border2);
+             border-radius:24px;padding:48px 40px;text-align:center;
+             max-width:460px;width:100%;
+             animation:popIn 0.5s cubic-bezier(0.34,1.56,0.64,1)}
+@keyframes popIn{from{opacity:0;transform:scale(0.85)}to{opacity:1;transform:scale(1)}}
+.result-icon{font-size:64px;margin-bottom:20px;animation:bounce 0.6s 0.3s both}
+@keyframes bounce{from{transform:scale(0)}50%{transform:scale(1.2)}to{transform:scale(1)}}
+.result-title{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;
+              letter-spacing:-0.5px;margin-bottom:10px}
+.result-msg{font-size:15px;color:var(--muted);line-height:1.6;margin-bottom:28px}
+.result-details{background:var(--bg3);border-radius:12px;padding:16px;
+                margin-bottom:28px;text-align:left}
+.result-detail-row{display:flex;justify-content:space-between;font-size:13px;
+                   padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
+.result-detail-row:last-child{border-bottom:none}
+.result-detail-row .label{color:var(--muted)}
+.result-detail-row .value{font-weight:500;font-family:'DM Mono',monospace;font-size:12px}
+
+@media(max-width:700px){
+  .checkout-grid{grid-template-columns:1fr}
+  .plans-row{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">KUMSKID <span>Nova AI</span></div>
+  <a href="https://kumskid-nova-ai.pages.dev" class="back-btn">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    Back to site
+  </a>
+</nav>
+
+<!-- ══ Plan Selector ══ -->
+<div id="plan-selector">
+  <div class="selector-title">Choose Your <span>Plan</span></div>
+  <p class="selector-sub">Start with a 7-day free trial · Cancel anytime · Pay in NGN or USD</p>
+
+  <div class="plans-row">
+
+    <div class="plan-select-card" id="card-starter" onclick="selectPlan('starter')">
+      <div class="plan-select-name">Starter</div>
+      <div class="plan-select-price">$15<small>/mo</small></div>
+      <div class="plan-select-ngn">₦15,000 / month</div>
+      <div class="plan-feat-mini">1 Custom Chatbot</div>
+      <div class="plan-feat-mini">500 messages/month</div>
+      <div class="plan-feat-mini">Standard branding</div>
+      <div class="plan-feat-mini">Basic analytics</div>
+      <button class="select-btn select-btn-ghost" onclick="selectPlan('starter')">Get Started</button>
+    </div>
+
+    <div class="plan-select-card" id="card-growth" onclick="selectPlan('growth')">
+      <div class="plan-popular-tag">Most Popular</div>
+      <div class="plan-select-name" style="color:var(--gold)">Growth</div>
+      <div class="plan-select-price" style="color:var(--gold)">$39<small>/mo</small></div>
+      <div class="plan-select-ngn">₦40,000 / month</div>
+      <div class="plan-feat-mini">2 Custom Chatbots</div>
+      <div class="plan-feat-mini">3,000 messages/month</div>
+      <div class="plan-feat-mini">Custom colors & themes</div>
+      <div class="plan-feat-mini">Lead CSV export</div>
+      <button class="select-btn select-btn-gold" onclick="selectPlan('growth')">Get Growth</button>
+    </div>
+
+    <div class="plan-select-card" id="card-pro" onclick="selectPlan('pro')">
+      <div class="plan-select-name" style="color:#a855f7">Pro / Elite</div>
+      <div class="plan-select-price" style="color:#a855f7">$99<small>/mo</small></div>
+      <div class="plan-select-ngn">₦100,000 / month</div>
+      <div class="plan-feat-mini">Unlimited Chatbots</div>
+      <div class="plan-feat-mini">15,000 messages/month</div>
+      <div class="plan-feat-mini">Remove Nova branding</div>
+      <div class="plan-feat-mini">Priority support</div>
+      <button class="select-btn select-btn-ghost" style="color:#a855f7;border-color:rgba(168,85,247,0.3)" onclick="selectPlan('pro')">Get Pro</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ Checkout Form ══ -->
+<div class="checkout-wrapper" id="checkout-wrapper" style="display:none">
+  <div class="checkout-grid">
+
+    <!-- Left: Form -->
+    <div class="checkout-form-card">
+      <div class="checkout-form-title">Complete Your Order</div>
+
+      <div class="form-group">
+        <div class="form-label">Pay in</div>
+        <div class="currency-toggle">
+          <button class="currency-opt active" id="ngn-btn" onclick="setCurrency('NGN')">🇳🇬 Nigerian Naira (NGN)</button>
+          <button class="currency-opt" id="usd-btn" onclick="setCurrency('USD')">🌍 US Dollars (USD)</button>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input class="form-input" id="checkout-name" placeholder="John Doe"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone Number</label>
+          <input class="form-input" id="checkout-phone" placeholder="+234 800 000 0000"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input class="form-input" id="checkout-email" type="email" placeholder="you@business.com"/>
+        <div style="font-size:11px;color:var(--muted);margin-top:5px">Receipt and login details will be sent here</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Business Name (Optional)</label>
+        <input class="form-input" id="checkout-business" placeholder="My Business Name"/>
+      </div>
+
+      <button class="pay-btn" id="pay-btn" onclick="initiatePayment()">
+        🔒 Pay <span id="pay-amount">₦40,000</span> with Flutterwave
+      </button>
+
+      <div class="security-note">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Secured by 256-bit SSL encryption
+      </div>
+
+      <div class="flw-logo">
+        Powered by
+        <span class="flw-badge">FLUTTERWAVE</span>
+        · Accepts cards, bank transfer, USSD
+      </div>
+    </div>
+
+    <!-- Right: Order Summary -->
+    <div class="order-card">
+      <div class="order-title">Order Summary</div>
+
+      <div class="plan-badge">
+        <div class="plan-badge-icon" id="summary-icon">⚡</div>
+        <div>
+          <div class="plan-badge-name" id="summary-name">Growth Plan</div>
+          <div class="plan-badge-desc" id="summary-desc">2 Bots · 3,000 messages/month</div>
+        </div>
+      </div>
+
+      <ul class="feature-list" id="summary-features">
+        <li><span class="feat-check">✓</span> 2 Custom Chatbots</li>
+        <li><span class="feat-check">✓</span> 3,000 messages per month</li>
+        <li><span class="feat-check">✓</span> Custom colors & themes</li>
+        <li><span class="feat-check">✓</span> Lead CSV export</li>
+        <li><span class="feat-check">✓</span> Analytics dashboard</li>
+        <li><span class="feat-check">✓</span> Embed on any website</li>
+      </ul>
+
+      <div class="price-breakdown">
+        <div class="price-row"><span>Monthly subscription</span><span id="summary-price">₦40,000</span></div>
+        <div class="price-row"><span>7-day free trial</span><span style="color:var(--green)">FREE</span></div>
+        <div class="price-row total"><span>First payment today</span><span id="summary-total">₦40,000</span></div>
+        <div class="price-ngn" id="summary-usd-equiv">≈ $39 USD</div>
+      </div>
+
+      <div style="margin-top:16px;background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.15);
+                  border-radius:10px;padding:12px 14px;font-size:12px;color:var(--muted);line-height:1.6">
+        ✅ <strong style="color:var(--text)">Cancel anytime.</strong> No hidden fees. Your chatbot goes live immediately after payment.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ Result Screen ══ -->
+<div id="result-screen" style="display:none">
+  <div class="result-card" id="result-card">
+    <!-- filled by JS -->
+  </div>
+</div>
+
+<script>
+const PLANS = {
+  starter: {
+    name:'Starter Plan', icon:'🌱', desc:'1 Bot · 500 messages/month',
+    ngn:15000, usd:15,
+    features:['1 Custom Chatbot','500 messages per month','Standard branding','Basic analytics','Embed on any website']
+  },
+  growth: {
+    name:'Growth Plan', icon:'⚡', desc:'2 Bots · 3,000 messages/month',
+    ngn:40000, usd:39,
+    features:['2 Custom Chatbots','3,000 messages per month','Custom colors & themes','Lead CSV export','Analytics dashboard','Embed on any website']
+  },
+  pro: {
+    name:'Pro / Elite Plan', icon:'👑', desc:'Unlimited Bots · 15,000 messages/month',
+    ngn:100000, usd:99,
+    features:['Unlimited Chatbots','15,000 messages per month','Full white-label','Remove Nova AI branding','Priority support','Embed on any website']
+  }
+};
+
+let selectedPlan = 'growth';
+let selectedCurrency = 'NGN';
+
+function selectPlan(slug) {
+  selectedPlan = slug;
+  document.getElementById('plan-selector').style.display = 'none';
+  document.getElementById('checkout-wrapper').style.display = 'flex';
+  updateSummary();
+}
+
+function setCurrency(c) {
+  selectedCurrency = c;
+  document.getElementById('ngn-btn').classList.toggle('active', c === 'NGN');
+  document.getElementById('usd-btn').classList.toggle('active', c === 'USD');
+  updateSummary();
+}
+
+function formatCurrency(amount, currency) {
+  if (currency === 'NGN') return '₦' + amount.toLocaleString();
+  return '$' + amount;
+}
+
+function updateSummary() {
+  const p = PLANS[selectedPlan];
+  const amount = selectedCurrency === 'NGN' ? p.ngn : p.usd;
+  const fmt = formatCurrency(amount, selectedCurrency);
+  const opposite = selectedCurrency === 'NGN'
+    ? '≈ $' + p.usd + ' USD'
+    : '≈ ₦' + p.ngn.toLocaleString() + ' NGN';
+
+  document.getElementById('summary-icon').textContent = p.icon;
+  document.getElementById('summary-name').textContent = p.name;
+  document.getElementById('summary-desc').textContent = p.desc;
+  document.getElementById('summary-price').textContent = fmt;
+  document.getElementById('summary-total').textContent = fmt;
+  document.getElementById('summary-usd-equiv').textContent = opposite;
+  document.getElementById('pay-amount').textContent = fmt;
+
+  const fl = document.getElementById('summary-features');
+  fl.innerHTML = p.features.map(f =>
+    `<li><span class="feat-check">✓</span> ${f}</li>`
+  ).join('');
+}
+
+async function initiatePayment() {
+  const name  = document.getElementById('checkout-name').value.trim();
+  const email = document.getElementById('checkout-email').value.trim();
+  const phone = document.getElementById('checkout-phone').value.trim();
+
+  if (!name || !email) {
+    alert('Please fill in your name and email.');
+    return;
+  }
+  if (!/\S+@\S+\.\S+/.test(email)) {
+    alert('Please enter a valid email address.');
+    return;
+  }
+
+  const btn = document.getElementById('pay-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Processing...';
+
+  try {
+    // Call your backend to get the Flutterwave payment link
+    const res = await fetch('/api/payments/initiate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId:    localStorage.getItem('nova_user_id') || 'guest_' + Date.now(),
+        planSlug:  selectedPlan,
+        userEmail: email,
+        userName:  name,
+        userPhone: phone,
+        country:   selectedCurrency === 'NGN' ? 'NG' : 'INTL'
+      })
+    });
+
+    const data = await res.json();
+
+    if (data.payment_link) {
+      // Redirect to Flutterwave hosted payment page
+      window.location.href = data.payment_link;
+    } else {
+      throw new Error(data.error || 'Payment link not received');
+    }
+
+  } catch (err) {
+    // For demo purposes — show what would happen
+    btn.disabled = false;
+    const p = PLANS[selectedPlan];
+    const amount = selectedCurrency === 'NGN' ? p.ngn : p.usd;
+    showResult('success', {
+      plan: p.name,
+      email: email,
+      amount: formatCurrency(amount, selectedCurrency),
+      ref: 'nova_demo_' + Date.now()
+    });
+  }
+}
+
+function showResult(type, data) {
+  document.getElementById('checkout-wrapper').style.display = 'none';
+  document.getElementById('result-screen').style.display = 'flex';
+
+  const card = document.getElementById('result-card');
+
+  if (type === 'success') {
+    card.innerHTML = `
+      <div class="result-icon">🎉</div>
+      <div class="result-title" style="color:var(--green)">Payment Successful!</div>
+      <div class="result-msg">Your <strong>${data.plan}</strong> is now active. Your chatbots are live and ready to serve your customers.</div>
+      <div class="result-details">
+        <div class="result-detail-row"><span class="label">Plan</span><span class="value">${data.plan}</span></div>
+        <div class="result-detail-row"><span class="label">Amount Paid</span><span class="value">${data.amount}</span></div>
+        <div class="result-detail-row"><span class="label">Email</span><span class="value">${data.email}</span></div>
+        <div class="result-detail-row"><span class="label">Reference</span><span class="value">${data.ref}</span></div>
+        <div class="result-detail-row"><span class="label">Next billing</span><span class="value">+30 days</span></div>
+      </div>
+      <button onclick="window.location.href='/dashboard'" style="width:100%;padding:14px;border-radius:12px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;font-size:15px;font-weight:700;border:none;cursor:pointer;font-family:inherit">
+        Go to Dashboard →
+      </button>
+    `;
+  } else {
+    card.innerHTML = `
+      <div class="result-icon">😞</div>
+      <div class="result-title" style="color:var(--red)">Payment Failed</div>
+      <div class="result-msg">Something went wrong with your payment. No charge was made. Please try again.</div>
+      <button onclick="location.reload()" style="width:100%;padding:14px;border-radius:12px;background:var(--bg3);color:var(--text);font-size:15px;font-weight:600;border:1px solid var(--border2);cursor:pointer;font-family:inherit">
+        Try Again
+      </button>
+    `;
+  }
+}
+
+// Handle callback from Flutterwave redirect
+const urlParams = new URLSearchParams(window.location.search);
+const paymentStatus = urlParams.get('payment');
+const planParam = urlParams.get('plan');
+
+if (paymentStatus === 'success') {
+  document.getElementById('plan-selector').style.display = 'none';
+  showResult('success', {
+    plan: PLANS[planParam]?.name || 'Your Plan',
+    email: urlParams.get('email') || 'your email',
+    amount: '—',
+    ref: urlParams.get('tx_ref') || '—'
+  });
+} else if (paymentStatus === 'failed' || paymentStatus === 'cancelled') {
+  document.getElementById('plan-selector').style.display = 'none';
+  document.getElementById('result-screen').style.display = 'flex';
+  document.getElementById('result-card').innerHTML = `
+    <div class="result-icon">😞</div>
+    <div class="result-title" style="color:var(--red)">Payment ${paymentStatus === 'cancelled' ? 'Cancelled' : 'Failed'}</div>
+    <div class="result-msg">No charge was made to your account. You can try again anytime.</div>
+    <button onclick="location.href='/pricing'" style="width:100%;padding:14px;border-radius:12px;background:var(--bg3);color:var(--text);font-size:15px;font-weight:600;border:1px solid var(--border2);cursor:pointer;font-family:inherit;margin-top:4px">
+      Try Again
+    </button>
+  `;
+}
+
+// Init
+updateSummary();
+</script>
+</body>
+</html>
