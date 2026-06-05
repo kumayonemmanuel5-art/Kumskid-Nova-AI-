@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Nova AI — Platform Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#D4AF37;--gold2:#f0d060;
+  --bg:#07070a;--bg2:#0f0f14;--bg3:#161620;
+  --text:#f0f0f8;--muted:rgba(240,240,248,0.45);
+  --border:rgba(255,255,255,0.07);--green:#22c55e;--red:#ef4444;
+}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;
+     min-height:100vh;padding:40px 20px;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 40% at 50% 0%,rgba(212,175,55,0.08),transparent)}
+
+.hub{max-width:700px;margin:0 auto}
+
+/* Header */
+.hub-header{text-align:center;margin-bottom:48px}
+.hub-logo{
+  width:60px;height:60px;border-radius:18px;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;margin:0 auto 16px;
+  box-shadow:0 4px 24px rgba(212,175,55,0.35);
+}
+.hub-title{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;
+           letter-spacing:-0.5px;margin-bottom:6px}
+.hub-title span{color:var(--gold)}
+.hub-sub{font-size:14px;color:var(--muted)}
+.hub-url{
+  display:inline-block;margin-top:10px;
+  font-size:11px;font-family:monospace;
+  background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.2);
+  color:var(--gold);padding:4px 12px;border-radius:99px;
+}
+
+/* Section label */
+.section-label{
+  font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:2px;color:var(--muted);
+  margin:32px 0 12px;padding-left:4px;
+}
+
+/* Cards */
+.cards{display:flex;flex-direction:column;gap:10px}
+.hub-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:14px;padding:16px 20px;
+  display:flex;align-items:center;gap:16px;
+  text-decoration:none;color:var(--text);
+  transition:all 0.2s;cursor:pointer;
+}
+.hub-card:hover{
+  border-color:rgba(212,175,55,0.3);
+  background:var(--bg3);
+  transform:translateX(4px);
+}
+.hub-card-icon{
+  width:44px;height:44px;border-radius:12px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+}
+.hub-card-info{flex:1}
+.hub-card-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:3px}
+.hub-card-desc{font-size:12px;color:var(--muted);line-height:1.5}
+.hub-card-url{font-size:10px;font-family:monospace;color:var(--gold);margin-top:4px}
+.hub-card-arrow{
+  font-size:18px;color:var(--muted);flex-shrink:0;
+  transition:transform 0.2s;
+}
+.hub-card:hover .hub-card-arrow{transform:translateX(4px);color:var(--gold)}
+
+/* Status badge */
+.status-dot{
+  width:7px;height:7px;border-radius:50%;flex-shrink:0;
+  animation:blink 2s infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* Test results */
+.test-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
+  margin-top:12px;
+}
+.test-item{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:10px;padding:12px 14px;
+  display:flex;align-items:center;gap:8px;font-size:12px;
+}
+.test-result{margin-left:auto;font-size:11px;font-weight:600}
+
+/* Footer */
+.hub-footer{
+  text-align:center;margin-top:48px;
+  font-size:12px;color:var(--muted);
+}
+.hub-footer a{color:var(--gold);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="hub">
+
+  <!-- Header -->
+  <div class="hub-header">
+    <div class="hub-logo">🤖</div>
+    <div class="hub-title">KUMSKID <span>Nova AI</span></div>
+    <div class="hub-sub">Platform Hub — All pages in one place</div>
+    <div class="hub-url">kumskid-nova-ai.pages.dev</div>
+  </div>
+
+  <!-- Public Pages -->
+  <div class="section-label">🌐 Public Pages</div>
+  <div class="cards">
+    <a class="hub-card" href="/index.html">
+      <div class="hub-card-icon" style="background:rgba(212,175,55,0.1)">🏠</div>
+      <div class="hub-card-info">
+        <div class="hub-card-name">Current Homepage</div>
+        <div class="hub-card-desc">Your existing chatbot page — the original site</div>
+        <div class="hub-card-url">/index.html</div>
+      </div>
+      <div class="status-dot" style="background:var(--green)"></div>
+      <div class="hub-card-arrow">→</div>
+    </a>
+    <a class="hub-card" href="/nova-landing.html">
+      <div class="hub-card-icon" style="background:rgba(212,175,55,0.1)">🚀</div>
+      <div class="hub-card-info">
+        <div class="hub-card-name">New SaaS Landing Page</div>
+        <div class="hub-card-desc">Professional landing page with pricing, features and testimonials</div>
+        <div class="hub-card-url">/nova-landing.html</div>
+      </div>
+      <div class="status-dot" style="background:var(--green)"></div>
+      <div class="hub-card-arrow">→</div>
+    </a>
+    <a class="hub-card" href="/nova-checkout.html">
+      <div class="hub-card-icon" style="background:rgba(34,197,94,0.1)">💳</div>
+      <div class="hub-card-info">
+        <div class="hub-card-name">Checkout & Pricing Page</div>
+        <div class="hub-card-desc">Where clients pick a plan and pay via Flutterwave</div>
+        <div class="hub-card-url">/nova-checkout.html</div>
+      </div>
+      <div class="status-dot" style="background:var(--green)"></div>
+      <div class="hub-card-arrow">→</div>
+    </a>
+    <a class="hub-card" href="/nova-widget-demo.html">
+      <div class="hub-card-icon" style="background:rgba(96,165,250,0.1)">🔌</div>
+      <div class="hub-card-info">
+        <div class="hub-card-name">Widget Demo & Docs</div>
+        <div class="hub-card-desc">Show clients how the embed widget works. Share this link</div>
+        <div class="hub-card-url">/nova-widget-demo.html</div>
+      </div>
+      <div class="status-dot" style="background:var(--green)"></div>
+      <div class="hub-card-arrow">→</div>
+    </a>
+    <a class="hub-card" href="/nova-ai-demo.html">
+      <div class="hub-card-icon" style="background:rgba(168,85,247,0.1)">💬</div>
+      <div class="hub-card-info">
+        <div class="hub-card-name">Live Chatbot Demo</div>
+        <div class="hub-card-desc">Your existing Nova AI chatbot demo page</div>
+        <div class="hub-card-url">/nova-ai-demo.html</div>
+      </div>
+      <div class="status-dot" style="background:var(--green)"></div>
+      <div class="hub-card-arrow">→</div>
+    </a>
+  </div>
+
+  <!-- Client Area -->
+  <div class="section-label">👤 Client Area</div>
+  <div class="cards">
+    <a class="hub-card" href="/nova-dashboard.html">
+      <div class="hub-card-icon" style="background:rgba(212,175,55,0.12)">📊</div>
+      <div class="hub-card-info">
+        <div class="hub-card-name">Client Dashboard</div>
+        <div class="hub-card-desc">Where your paying clients log in to manage their bots, see analytics and get embed code</div>
+        <div class="hub-card-url">/nova-dashboard.html</div>
+      </div>
+      <div class="status-dot" style="background:var(--green)"></div>
+      <div class="hub-card-arrow">→</div>
+    </a>
+  </div>
+
+  <!-- Owner Only -->
+  <div class="section-label">🔒 Owner Only</div>
+  <div class="cards">
+    <a class="hub-card" href="/nova-admin.html">
+      <div class="hub-card-icon" style="background:rgba(239,68,68,0.1)">⚡</div>
+      <div class="hub-card-info">
+        <div class="hub-card-name">Admin Panel</div>
+        <div class="hub-card-desc">Your personal backend — all clients, revenue, subscriptions, platform health</div>
+        <div class="hub-card-url">/nova-admin.html</div>
+      </div>
+      <div class="status-dot" style="background:var(--green)"></div>
+      <div class="hub-card-arrow">→</div>
+    </a>
+    <a class="hub-card" href="/nova-schema-reference.html">
+      <div class="hub-card-icon" style="background:rgba(96,165,250,0.1)">🗄️</div>
+      <div class="hub-card-info">
+        <div class="hub-card-name">Database Schema Reference</div>
+        <div class="hub-card-desc">Visual reference for all 6 Supabase tables and their structure</div>
+        <div class="hub-card-url">/nova-schema-reference.html</div>
+      </div>
+      <div class="status-dot" style="background:var(--green)"></div>
+      <div class="hub-card-arrow">→</div>
+    </a>
+  </div>
+
+  <!-- Developer -->
+  <div class="section-label">⚙️ Developer</div>
+  <div class="cards">
+    <a class="hub-card" href="/nova-widget.js" target="_blank">
+      <div class="hub-card-icon" style="background:rgba(34,197,94,0.1)">📦</div>
+      <div class="hub-card-info">
+        <div class="hub-card-name">nova-widget.js</div>
+        <div class="hub-card-desc">The embed widget script. If you can see the JS code it means it's live and working</div>
+        <div class="hub-card-url">/nova-widget.js</div>
+      </div>
+      <div class="status-dot" style="background:var(--green)"></div>
+      <div class="hub-card-arrow">→</div>
+    </a>
+    <a class="hub-card" href="/nova-payment.js" target="_blank">
+      <div class="hub-card-icon" style="background:rgba(249,115,22,0.1)">💰</div>
+      <div class="hub-card-info">
+        <div class="hub-card-name">nova-payment.js</div>
+        <div class="hub-card-desc">Flutterwave payment backend code. Node.js — needs server to run</div>
+        <div class="hub-card-url">/nova-payment.js</div>
+      </div>
+      <div class="status-dot" style="background:var(--gold);animation:none"></div>
+      <div class="hub-card-arrow">→</div>
+    </a>
+  </div>
+
+  <!-- Quick test section -->
+  <div class="section-label">✅ Quick Status Check</div>
+  <div class="test-grid" id="test-grid">
+    <div class="test-item">
+      <span>🏠</span> index.html
+      <span class="test-result" id="t-index" style="color:var(--muted)">checking...</span>
+    </div>
+    <div class="test-item">
+      <span>🚀</span> nova-landing
+      <span class="test-result" id="t-landing" style="color:var(--muted)">checking...</span>
+    </div>
+    <div class="test-item">
+      <span>📊</span> dashboard
+      <span class="test-result" id="t-dashboard" style="color:var(--muted)">checking...</span>
+    </div>
+    <div class="test-item">
+      <span>💳</span> checkout
+      <span class="test-result" id="t-checkout" style="color:var(--muted)">checking...</span>
+    </div>
+    <div class="test-item">
+      <span>⚡</span> admin
+      <span class="test-result" id="t-admin" style="color:var(--muted)">checking...</span>
+    </div>
+    <div class="test-item">
+      <span>📦</span> widget.js
+      <span class="test-result" id="t-widget" style="color:var(--muted)">checking...</span>
+    </div>
+  </div>
+
+  <div class="hub-footer">
+    <p>KUMSKID Nova AI · Built by <a href="#">KUMSKID WEB</a> · Abeokuta, Nigeria</p>
+    <p style="margin-top:6px;font-size:11px">Bookmark this page: <span style="color:var(--gold)">kumskid-nova-ai.pages.dev/hub.html</span></p>
+  </div>
+
+</div>
+
+<script>
+// Auto-check all pages are live
+const checks = [
+  { id:'t-index',    url:'/index.html' },
+  { id:'t-landing',  url:'/nova-landing.html' },
+  { id:'t-dashboard',url:'/nova-dashboard.html' },
+  { id:'t-checkout', url:'/nova-checkout.html' },
+  { id:'t-admin',    url:'/nova-admin.html' },
+  { id:'t-widget',   url:'/nova-widget.js' },
+];
+
+checks.forEach(({ id, url }) => {
+  fetch(url, { method: 'HEAD' })
+    .then(r => {
+      const el = document.getElementById(id);
+      if (r.ok) {
+        el.textContent = '✓ Live';
+        el.style.color = 'var(--green)';
+      } else {
+        el.textContent = '✗ Error';
+        el.style.color = 'var(--red)';
+      }
+    })
+    .catch(() => {
+      const el = document.getElementById(id);
+      el.textContent = '✗ Down';
+      el.style.color = 'var(--red)';
+    });
+});
+</script>
+</body>
+</html>
