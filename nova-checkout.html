@@ -384,6 +384,19 @@ function updateSummary() {
   ).join('');
 }
 
+// ── Real Flutterwave Payment ──────────────────────────────────
+const FLW_PUBLIC_KEY = 'FLWPUBK-709e46f8f2b233e093689c039a0b2359-X';
+
+function loadFlutterwaveScript() {
+  return new Promise((resolve) => {
+    if (window.FlutterwaveCheckout) { resolve(); return; }
+    const script = document.createElement('script');
+    script.src = 'https://checkout.flutterwave.com/v3.js';
+    script.onload = resolve;
+    document.head.appendChild(script);
+  });
+}
+
 async function initiatePayment() {
   const name  = document.getElementById('checkout-name').value.trim();
   const email = document.getElementById('checkout-email').value.trim();
@@ -400,43 +413,63 @@ async function initiatePayment() {
 
   const btn = document.getElementById('pay-btn');
   btn.disabled = true;
-  btn.textContent = '⏳ Processing...';
+  btn.textContent = 'Loading payment...';
 
   try {
-    // Call your backend to get the Flutterwave payment link
-    const res = await fetch('/api/payments/initiate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        userId:    localStorage.getItem('nova_user_id') || 'guest_' + Date.now(),
-        planSlug:  selectedPlan,
-        userEmail: email,
-        userName:  name,
-        userPhone: phone,
-        country:   selectedCurrency === 'NGN' ? 'NG' : 'INTL'
-      })
-    });
+    await loadFlutterwaveScript();
 
-    const data = await res.json();
-
-    if (data.payment_link) {
-      // Redirect to Flutterwave hosted payment page
-      window.location.href = data.payment_link;
-    } else {
-      throw new Error(data.error || 'Payment link not received');
-    }
-
-  } catch (err) {
-    // For demo purposes — show what would happen
-    btn.disabled = false;
-    const p = PLANS[selectedPlan];
+    const p      = PLANS[selectedPlan];
     const amount = selectedCurrency === 'NGN' ? p.ngn : p.usd;
-    showResult('success', {
-      plan: p.name,
-      email: email,
-      amount: formatCurrency(amount, selectedCurrency),
-      ref: 'nova_demo_' + Date.now()
+    const txRef  = 'nova_' + selectedPlan + '_' + Date.now();
+
+    btn.disabled = false;
+    btn.textContent = 'Pay ' + formatCurrency(amount, selectedCurrency) + ' with Flutterwave';
+
+    FlutterwaveCheckout({
+      public_key:      FLW_PUBLIC_KEY,
+      tx_ref:          txRef,
+      amount:          amount,
+      currency:        selectedCurrency,
+      payment_options: 'card,banktransfer,ussd,mobilemoney',
+      customer: {
+        email:        email,
+        phone_number: phone || '',
+        name:         name
+      },
+      customizations: {
+        title:       'KUMSKID Nova AI',
+        description: p.desc,
+        logo:        'https://kumskid-nova-ai.pages.dev/logo.png'
+      },
+      meta: {
+        plan_slug:  selectedPlan,
+        user_email: email
+      },
+      callback: function(response) {
+        if (response.status === 'successful' || response.status === 'completed') {
+          localStorage.setItem('nova_pending_plan', selectedPlan);
+          localStorage.setItem('nova_user_email', email);
+          localStorage.setItem('nova_tx_ref', txRef);
+          showResult('success', {
+            plan:   p.name,
+            email:  email,
+            amount: formatCurrency(amount, selectedCurrency),
+            ref:    response.tx_ref || txRef
+          });
+        } else {
+          showResult('failed', {});
+        }
+      },
+      onclose: function() {
+        btn.disabled = false;
+        btn.textContent = 'Pay ' + formatCurrency(amount, selectedCurrency) + ' with Flutterwave';
+      }
     });
+
+  } catch(err) {
+    btn.disabled = false;
+    btn.textContent = 'Pay with Flutterwave';
+    alert('Payment error: ' + err.message);
   }
 }
 
